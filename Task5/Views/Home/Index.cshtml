@@ -1,0 +1,107 @@
+﻿@model Task5.ViewModels.UserInformationViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .btnmargin{
+        margin: 10px;
+    }
+
+</style>
+
+<script>
+    window.addEventListener('load', () => {
+        document.getElementById('typeNumber').value = @Model.ErrorValue / 100;
+        document.getElementById('customRange3').value = @Model.ErrorValue / 100;
+
+        if (@Model.Locale == 0) {
+            document.getElementById('select').value = "ru";
+        }else if (@Model.Locale == 1) {
+            document.getElementById('select').value = "en";
+        }else{
+            document.getElementById('select').value = "pl";
+        }
+
+    });
+
+    //window.onscroll = function(ev) {
+    //if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
+    //        document.getElementById('form').submit()
+    //    }
+    //};
+
+
+    function changeInputValue(value) {
+        document.getElementById('typeNumber').value = value;
+    }
+
+    function changeSliderValue(value) {
+        document.getElementById('customRange3').value = value;
+    }
+    
+</script>
+
+<form id="form" method="get" asp-controller="Home">
+    <label for="customRange3" class="form-label">Error range from 0 to 10</label>
+    <input onchange="changeInputValue(this.value)" type="range" class="form-range"
+           value="" min="0" max="10" step="0.01" id="customRange3">
+
+    <div data-mdb-input-init class="form-outline">
+        <input type="number" id="typeNumber" step="0.01" min="0" max="1000"
+               value="" class="form-control" name="ErrorValue" onchange="changeSliderValue(this.value)" />
+        <label class="form-label" for="typeNumber">Error number</label>
+    </div>
+
+    <div data-mdb-input-init class="form-outline">
+        <input type="number" id="typeNumber" step="1" min="0" value="@Model.Page" class="form-control" name="Page" />
+        <label class="form-label" for="typeNumber">Page</label>
+    </div>
+
+    <div data-mdb-input-init class="form-outline">
+        <input type="number" id="typeNumber" step="1" min="0" value="@Model.Seed" class="form-control" name="Seed" />
+        <label class="form-label" for="typeNumber">Seed</label>
+    </div>
+
+    <select name="Locale" id="select"  class="form-select">
+        <option selected value="ru">Russian</option>
+        <option value="pl">Polish</option>
+        <option value="en">English</option>
+    </select>
+
+    <button class="btn btn-success btnmargin" type="submit" asp-action="Index">
+        Generate
+    </button>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Number</th>
+                <th scope="col">Id</th>
+                <th scope="col">FullName</th>
+                <th scope="col">Address</th>
+                <th scope="col">PhoneNumber</th>
+            </tr>
+        </thead>
+        <tbody>
+
+                @foreach(var userInformation in @Model.UsersInformation){
+                    <tr>
+                        <th scope="col">@userInformation.Number</th>
+                        <th scope="col">@userInformation.Id</th>
+                        <th scope="col">@userInformation.FullName</th>
+                        <th scope="col">@userInformation.Address</th>
+                        <th scope="col">@userInformation.PhoneNumber</th>
+                    </tr>
+                }
+        </tbody>
+    </table>
+    
+    <button class="btn btn-success btnmargin" type="submit" asp-action="GetCsv">
+        Get Csv
+    </button>
+</form>
+
+
+
+
