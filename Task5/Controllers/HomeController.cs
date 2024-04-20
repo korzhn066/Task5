@@ -29,10 +29,10 @@ namespace Task5.Controllers
             using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
             {
                 csv.WriteRecords(_dataService.GenerateUsersInformation(
-                    dataViewModel.Page == 0 ? 0 : 10,
+                    20 + 10 * (dataViewModel.Page - 1),
                     dataViewModel.ErrorValue,
                     dataViewModel.Locale,
-                    dataViewModel.Seed + dataViewModel.Page));
+                    dataViewModel.Seed));
 
                 return File(mem.ToArray(), "text/csv", "file.csv");
             }
@@ -56,6 +56,10 @@ namespace Task5.Controllers
                 locale = 0;
             }
 
+
+            dataViewModel.Page++;
+            Console.WriteLine(dataViewModel.Page);
+
             return View(new UserInformationViewModel
             {
                 Page = dataViewModel.Page,
@@ -63,10 +67,10 @@ namespace Task5.Controllers
                 Seed = dataViewModel.Seed,
                 ErrorValue = (int)(dataViewModel.ErrorValue * 100),
                 UsersInformation = _dataService.GenerateUsersInformation(
-                    dataViewModel.Page == 0 ? 0 : 10, 
+                    20 + 10 * (dataViewModel.Page - 1), 
                     dataViewModel.ErrorValue, 
                     dataViewModel.Locale,
-                    dataViewModel.Seed + dataViewModel.Page),
+                    dataViewModel.Seed),
             });
         }
         
