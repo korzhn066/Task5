@@ -24,6 +24,8 @@ namespace Task5.Controllers
         [HttpGet]
         public IActionResult GetData(DataViewModel dataViewModel)
         {
+            Console.WriteLine(dataViewModel.Page);
+
             var data = _dataService.GenerateUsersInformation(
                     10,
                     dataViewModel.ErrorValue,
@@ -32,7 +34,7 @@ namespace Task5.Controllers
 
             foreach (var item in data)
             {
-                item.Number += 20 + 10 * (dataViewModel.Page - 1);
+                item.Number += 20 + 10 * dataViewModel.Page;
             }
 
             return Json(data);
