@@ -74,18 +74,14 @@ namespace Task5.Controllers
                 locale = 0;
             }
 
-
-            dataViewModel.Page++;
-            Console.WriteLine(dataViewModel.Page);
-
             return View(new UserInformationViewModel
             {
-                Page = dataViewModel.Page,
+                Page = 0,
                 Locale = locale,
                 Seed = dataViewModel.Seed,
                 ErrorValue = (int)(dataViewModel.ErrorValue * 100),
                 UsersInformation = _dataService.GenerateUsersInformation(
-                    20 + 10 * (dataViewModel.Page - 1), 
+                    20, 
                     dataViewModel.ErrorValue, 
                     dataViewModel.Locale,
                     dataViewModel.Seed),
