@@ -15,6 +15,11 @@ namespace Task5.Services
                 return AddSymbol(faker, data);
             }
 
+            if (data.Length >= 30)
+            {
+                return RemoveSymbol(faker, data);
+            }
+
             var mode = (ModeEnum)faker.Random.Int(0, 2);
 
             return mode switch

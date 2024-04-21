@@ -22,6 +22,25 @@ namespace Task5.Services
             return ApplyErrors(usersInformation, errorProbability, faker);
         }
 
+        public List<UserInformation> GenerateUsersInformationByPage(int page, float errorProbability, string locale = "ru", int seed = 0)
+        {
+            var result = GenerateUsersInformation(20, errorProbability, locale, seed);
+
+            for (int i = 0; i < page; i++)
+            {
+                var onePage = GenerateUsersInformation(10, errorProbability, locale, seed + i);
+                
+                foreach (var item in onePage)
+                {
+                    item.Number += 20 + 10 * i;
+                }
+
+                result.AddRange(onePage);
+            }
+
+            return result;
+        }
+
         private List<UserInformation> ApplyErrors(List<UserInformation> data, float errorProbability, Faker faker)
         {
             foreach (var userInformation in data)

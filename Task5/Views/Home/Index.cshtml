@@ -12,7 +12,7 @@
 
 <script>
     window.addEventListener('load', () => {
-        document.getElementById('typeNumber').value = @Model.ErrorValue / 100;
+        document.getElementById('error').value = @Model.ErrorValue / 100;
         document.getElementById('customRange3').value = @Model.ErrorValue / 100;
 
         if (@Model.Locale == 0) {
@@ -25,19 +25,62 @@
 
     });
 
+    let isDataBlocked = false
+
     window.onscroll = function(ev) {
-    if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
-            document.getElementById('form').submit()
+        if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight && isDataBlocked == false) {       
+            isDataBlocked = true
+            
+            let errorValue = document.getElementById('error').value
+            let seed = document.getElementById('seed').value
+            let locale = document.getElementById('select').value
+            let page = document.getElementById('page').value
+
+            document.getElementById('page').value = parseInt(page) + 1 
+
+            let url = "/Home/GetData/?ErrorValue=" + errorValue + "&Seed=" + seed + "&Locale=" + locale + "&Page=" + page
+            $.ajax({
+                url: url,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let html = ""
+
+                    data.forEach(function (item) {
+                        html += `<tr>
+                                    <th scope="col">${item.number}</th>
+                                    <th scope="col">${item.id}</th>
+                                    <th scope="col">${item.fullName}</th>
+                                    <th scope="col">${item.address}</th>
+                                    <th scope="col">${item.phoneNumber}</th>
+                                 </tr>`
+                    })
+
+                    $("#table tbody")[0].innerHTML += html;
+
+                    isDataBlocked = false
+                },
+                error: function (error) {
+                    isDataBlocked = false
+                }
+            });
         }
     };
+    function updateWindow(obj){
+        if (obj.id == "customRange3"){
+            changeInputValue(obj.value)
+        }
 
+        document.getElementById('form').submit()
+    }
 
     function changeInputValue(value) {
-        document.getElementById('typeNumber').value = value;
+        document.getElementById('error').value = value
     }
 
     function changeSliderValue(value) {
-        document.getElementById('customRange3').value = value;
+        document.getElementById('customRange3').value = value
+        updateWindow(this)
     }
     
 </script>
@@ -46,29 +89,35 @@
     
     
     <div class="row">
-        <div class="col-3">
-            <label for="customRange3" class="form-label">Error range from 0 to 10</label>
-            <input onchange="changeInputValue(this.value)" type="range" class="form-range"
-                   value="" min="0" max="10" step="0.01" id="customRange3" />
-        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-9">
+                    <input onchange="changeInputValue(this.value)" onmouseup="updateWindow(this)" type="range" class="form-range"
+                           value="" min="0" max="10" step="0.01" id="customRange3" />
+                </div>
 
-        <div class="col-1">
-            <div data-mdb-input-init class="form-outline">
-                <input type="number" id="typeNumber" step="0.01" min="0" max="1000"
-                       value="" class="form-control" name="ErrorValue" onchange="changeSliderValue(this.value)" />
-                <label class="form-label" for="typeNumber">Error number</label>
+                <div class="col">
+                    <div data-mdb-input-init class="form-outline">
+                        <input type="number" id="error" step="0.01" min="0" max="1000"
+                               value="" class="form-control" name="ErrorValue" onchange="changeSliderValue(this.value)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">   
+                Error number
             </div>
         </div>
 
         <div class="col-1">
             <div data-mdb-input-init class="form-outline">
-                <input type="number" id="typeNumber" step="1" min="0" value="@Model.Seed" class="form-control" name="Seed" />
-                <label class="form-label" for="typeNumber">Seed</label>
+                <input onchange="updateWindow(this)" type="number" id="seed" step="1" min="0" value="@Model.Seed" class="form-control" name="Seed" />
+                <label class="form-label" for="seed">Seed</label>
             </div>
         </div>
 
         <div class="col-3">
-            <select name="Locale" id="select" class="form-select">
+            <select onchange="updateWindow(this)" name="Locale" id="select" class="form-select">
                 <option selected value="ru">Russian</option>
                 <option value="pl">Polish</option>
                 <option value="en">English</option>
@@ -81,10 +130,11 @@
             </button>
         </div>
 
-        <input style="visibility: hidden" type="number" id="typeNumber" step="1" min="0" value="@Model.Page" class="form-control" name="Page" />
+        <input style="visibility: hidden" type="number" id="page" step="1" min="0" value="@Model.Page" class="form-control" name="Page" />
     </div>
-    
-    <table class="table">
+</form>
+
+    <table id="table" class="table">
         <thead>
             <tr>
                 <th scope="col">Number</th>
@@ -107,7 +157,7 @@
                 }
         </tbody>
     </table>
-</form>
+
 
 
 
